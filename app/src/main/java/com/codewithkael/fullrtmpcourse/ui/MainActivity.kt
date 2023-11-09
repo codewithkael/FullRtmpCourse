@@ -1,10 +1,8 @@
 package com.codewithkael.fullrtmpcourse.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.service.voice.VoiceInteractionSession.ActivityId
 import android.widget.Toast
-import com.codewithkael.fullrtmpcourse.R
+import androidx.appcompat.app.AppCompatActivity
 import com.codewithkael.fullrtmpcourse.databinding.ActivityMainBinding
 import com.codewithkael.fullrtmpcourse.service.RtmpService
 import com.codewithkael.fullrtmpcourse.service.RtmpServiceRepository
@@ -16,7 +14,8 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), RtmpService.Listener {
 
     private lateinit var views: ActivityMainBinding
-    @Inject lateinit var repository: RtmpServiceRepository
+    @Inject
+    lateinit var repository: RtmpServiceRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,25 +24,30 @@ class MainActivity : AppCompatActivity(), RtmpService.Listener {
         setupViews()
     }
 
-    private fun setupViews(){
+    private fun setupViews() {
         RtmpService.listener = this@MainActivity
-        if (RtmpService.isStreamOn){
+        if (RtmpService.isStreamOn) {
             streamStarted()
             views.urlEt.setText(RtmpService.currentUrl)
         }
         views.apply {
             startBtn.setOnClickListener {
                 getPermissions {
-                    if (it){
-                        if (urlEt.text.toString().isNotEmpty()){
+                    if (it) {
+                        if (urlEt.text.toString().isNotEmpty()) {
                             repository.startService(views.urlEt.text.toString())
                             startBtn.isEnabled = false
                             statusTv.text = "Status: Connecting"
                         } else {
-                            Toast.makeText(this@MainActivity, "Enter url", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@MainActivity, "Enter url", Toast.LENGTH_SHORT)
+                                .show()
                         }
-                    }else{
-                        Toast.makeText(this@MainActivity, "Permissions not granted", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Permissions not granted",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -58,7 +62,7 @@ class MainActivity : AppCompatActivity(), RtmpService.Listener {
         }
     }
 
-    private fun streamStarted(){
+    private fun streamStarted() {
         views.apply {
             runOnUiThread {
                 urlEt.isEnabled = false
@@ -70,7 +74,8 @@ class MainActivity : AppCompatActivity(), RtmpService.Listener {
             }
         }
     }
-    private fun streamStopped(){
+
+    private fun streamStopped() {
         runOnUiThread {
             views.apply {
                 urlEt.isEnabled = true
@@ -87,11 +92,14 @@ class MainActivity : AppCompatActivity(), RtmpService.Listener {
         views.frameLayout.removeView(RtmpService.surfaceView)
         super.onDestroy()
     }
-    private fun getPermissions(granted:(Boolean)->Unit){
+
+    private fun getPermissions(granted: (Boolean) -> Unit) {
         PermissionX.init(this)
-            .permissions(android.Manifest.permission.RECORD_AUDIO,
-                android.Manifest.permission.CAMERA)
-            .request{allGranted,_,_ ->
+            .permissions(
+                android.Manifest.permission.RECORD_AUDIO,
+                android.Manifest.permission.CAMERA
+            )
+            .request { allGranted, _, _ ->
                 granted(allGranted)
             }
     }

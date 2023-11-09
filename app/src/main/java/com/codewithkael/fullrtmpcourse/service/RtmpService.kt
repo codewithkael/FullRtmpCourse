@@ -3,37 +3,33 @@ package com.codewithkael.fullrtmpcourse.service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.LifecycleService
 import com.codewithkael.fullrtmpcourse.R
 import com.codewithkael.fullrtmpcourse.rtmp.RtmpClient
 import com.haishinkit.view.HkSurfaceView
 
-class RtmpService : Service(), RtmpClient.Listener {
+class RtmpService : LifecycleService(), RtmpClient.Listener {
 
     companion object {
-        var surfaceView: HkSurfaceView?=null
+        var surfaceView: HkSurfaceView? = null
         var isServiceRunning = false
         var isStreamOn = false
-        var listener:Listener?=null
+        var listener: Listener? = null
         var currentUrl = ""
     }
 
     //notification section
     private lateinit var notificationBuilder: NotificationCompat.Builder
     private lateinit var notificationManager: NotificationManager
-    private var rtmpClient : RtmpClient?=null
+    private var rtmpClient: RtmpClient? = null
 
     override fun onCreate() {
         super.onCreate()
         setupNotification()
         surfaceView = HkSurfaceView(this)
-        surfaceView?.minimumHeight = MATCH_PARENT
-        surfaceView?.minimumWidth = MATCH_PARENT
-        rtmpClient = RtmpClient(surfaceView!!,this@RtmpService)
+        rtmpClient = RtmpClient(this, surfaceView!!, this@RtmpService)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -52,10 +48,10 @@ class RtmpService : Service(), RtmpClient.Listener {
 
 
     private fun handleStartService(intent: Intent) {
+
         val url = intent.getStringExtra("url")
         url?.let {
             currentUrl = it
-            rtmpClient?.init()
             rtmpClient?.start(it)
             startServiceWithNotification()
         }
@@ -79,8 +75,7 @@ class RtmpService : Service(), RtmpClient.Listener {
     }
 
 
-
-    private fun setupNotification(){
+    private fun setupNotification() {
         notificationManager = getSystemService(
             NotificationManager::class.java
         )
@@ -105,11 +100,7 @@ class RtmpService : Service(), RtmpClient.Listener {
     }
 
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
-
-    interface Listener{
+    interface Listener {
         fun onStreamStarted()
         fun onStreamClosed()
     }
