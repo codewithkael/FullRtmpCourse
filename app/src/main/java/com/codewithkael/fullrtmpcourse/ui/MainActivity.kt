@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity(), RtmpService.Listener {
     }
 
     private fun setupViews(){
-        views.urlEt.setText("rtmp://141.11.184.69/live/${UUID.randomUUID()}")
         RtmpService.listener = this@MainActivity
         if (RtmpService.isStreamOn){
             streamStarted()
