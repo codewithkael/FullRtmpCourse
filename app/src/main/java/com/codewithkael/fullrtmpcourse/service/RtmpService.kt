@@ -3,14 +3,15 @@ package com.codewithkael.fullrtmpcourse.service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Intent
+import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.LifecycleService
 import com.codewithkael.fullrtmpcourse.R
 import com.codewithkael.fullrtmpcourse.rtmp.RtmpClient
 import com.haishinkit.view.HkSurfaceView
 
-class RtmpService : LifecycleService(), RtmpClient.Listener {
+class RtmpService : Service(), RtmpClient.Listener {
 
     companion object {
         var surfaceView: HkSurfaceView? = null
@@ -44,6 +45,10 @@ class RtmpService : LifecycleService(), RtmpClient.Listener {
         }
 
         return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 
 
