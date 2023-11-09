@@ -53,13 +53,16 @@ class RtmpService : Service(), RtmpClient.Listener {
 
 
     private fun handleStartService(intent: Intent) {
-
-        val url = intent.getStringExtra("url")
-        url?.let {
-            currentUrl = it
-            rtmpClient?.start(it)
-            startServiceWithNotification()
+        if (!isServiceRunning){
+            isServiceRunning = true
+            val url = intent.getStringExtra("url")
+            url?.let {
+                currentUrl = it
+                rtmpClient?.start(it)
+                startServiceWithNotification()
+            }
         }
+
     }
 
 
